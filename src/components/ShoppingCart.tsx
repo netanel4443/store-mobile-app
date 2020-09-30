@@ -82,7 +82,6 @@ const styles=StyleSheet.create({
     flex:1,
     width:"100%",
 
-    
   },
   savedProductDeleteIcon:{
     alignItems:"center",
@@ -102,7 +101,7 @@ const styles=StyleSheet.create({
     borderRadius:10
   },
   clickedSavedProduct:{
-    flex:3,
+    flex:2,
     display: "flex",
     marginTop:10,
     marginBottom:10,

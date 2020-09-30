@@ -1,5 +1,6 @@
-import Modal from 'react-bootstrap/Modal'
-import Spinner from 'react-bootstrap/Spinner'
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ProgressDialog  } from 'react-native-simple-dialogs'
+
 
 import React from 'react'
 
@@ -9,21 +10,16 @@ interface Props{
 
 function SimpleSpinnerModal({isVisible}:Props) {
   return (
-    <div> 
-      <Modal
-        show={isVisible}
-        centered
-      >
-        <Modal.Body
-        style={{ display:"flex", justifyContent: 'center', alignItems: 'center'}}>
-          <Spinner
-           animation="border" 
-           variant="primary"
-          />
-        </Modal.Body>
-      </Modal>
-    </div>
+    <ProgressDialog
+    visible={isVisible}
+    title="Progress Dialog"
+    message="Please, wait..."
+    activityIndicatorColor='lightskyblue'
+    activityIndicatorSize='small'
+
+  />
   )
 }
+
 
 export default SimpleSpinnerModal

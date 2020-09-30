@@ -6,6 +6,8 @@ import {RootState} from '../reducers/rootReducer'
 import  * as actions from '../actions/homeActions'
 import { getKeyByValue} from '../utils/mapUtils'
 import TopNavBar from './TopNavBar'
+import SimpleSpinnerModal from './modals/SimpleSpinnerModal'
+import { BottomSheet, Icon } from 'react-native-elements'
 
 const Home = () => {
 
@@ -64,11 +66,20 @@ const Home = () => {
   }
 
   return (
-    <View>
-      <TopNavBar/>
-      <ScrollView>
+    <View >
+      <TopNavBar />
+
+      <ScrollView  >
     {  productsByCategory()}
       </ScrollView>
+      <View style={styles.addBtn} >
+      <Icon 
+      name={'add'}
+            reverse/>
+      </View>
+      
+   
+      <SimpleSpinnerModal isVisible={isLoading}/>
     </View>
   )
 }
@@ -93,7 +104,11 @@ const styles=StyleSheet.create({
     borderRadius:3,
     justifyContent:"center",
     alignItems:"center"
-  }
+  },
+  addBtn:{
+    position:'absolute',
+    bottom:0,
+  },
 
 })
 

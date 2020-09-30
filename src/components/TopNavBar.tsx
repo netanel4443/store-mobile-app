@@ -7,6 +7,7 @@ import { View , StyleSheet,  TouchableOpacity,Image} from 'react-native'
 import {Icon} from 'react-native-elements'
 import StroreOwnerDetailsModal from './modals/StroreOwnerDetailsModal'
 import * as RootNavigation from '../ui/navigation/RootNavigation'
+import SimpleSpinnerModal from './modals/SimpleSpinnerModal'
 
 
 
@@ -53,6 +54,8 @@ function TopNavBar() {
         setVisibility={(visibility)=>changeStoreOwnerDetailsModalVisibility(visibility)}
         currentDetails={details}
       />
+
+      <SimpleSpinnerModal isVisible={ isLoading }/>
     </View>
   )
 }
