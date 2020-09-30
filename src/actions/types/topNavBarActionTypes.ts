@@ -1,0 +1,4 @@
+export const GET_STORE_OWNER_DETAILS='getStoreOwnerDetails'
+export const CHANGE_STORE_OWNER_DETAILS_MODAL_VISIBILITY='changeStoreOwnerModalVisibility'
+export const SHOW_OR_HIDE_SPINNERR='showOrHideSpinnerr'
+export const ENABLE_OR_DISABLE_SOD_BTN='enableOrDisableSodBtn'

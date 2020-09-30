@@ -1,0 +1,1 @@
+export const SHOPPING_CART_LINK='shopping_cart'
