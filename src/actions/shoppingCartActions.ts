@@ -4,12 +4,14 @@ import * as repo from '../data/firebaseOperations'
 import { ProductDetails } from '../data/ProductDetails'
 import { errorConsoleIfDebug } from '../utils/consoleUtils'
 import { FirebaseFirestoreTypes } from '@react-native-firebase/firestore'
+import { parse } from '@babel/core'
+import { Linking } from 'react-native'
 
 
 export const getShoppingCartProducts=()=>async(dispatch:any)=>{
   let paths:string[]=[]
    const queryArr:Promise<FirebaseFirestoreTypes.DocumentSnapshot>[]=[]
-   const k=await localRepo.getShoppingCartItems()
+    
     return(
       paths =await localRepo.getShoppingCartItems(),
       paths.forEach((path:string)=>{
@@ -23,11 +25,11 @@ export const getShoppingCartProducts=()=>async(dispatch:any)=>{
           //handle a situation of product is not found in this path anymore / maybe deleted or the database has changed
           //This is because the prodcut's path may be found in user's local storage until he deletes it.
           if(data!=undefined){
-          tmpDataMap.set(data.productName,data)
-          totalPrice=totalPrice+parseFloat(data.price).valueOf()
+            tmpDataMap.set(data.productName,data)
+            console.log(JSON.parse(data.price) as number)
+            totalPrice=totalPrice+(JSON.parse(data.price))
           }
           else{
-            console.log(obj.ref.id)
             const notFound=`Expired ${tmpDataMap.size}`
             const productDetails=new ProductDetails()
             productDetails.productName=notFound

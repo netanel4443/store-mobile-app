@@ -27,12 +27,12 @@ export  const  getAllProducts=()=>{
   return  database.collection(CATEGORIES)
 }
 
-export const deleteProductImage=(path:string)=>{
+export const deleteProductsImage=(path:string)=>{
   return storage().refFromURL(path).delete()
 }
 
-export const uploadProductImage=(image:File)=>{
-  return storage().ref(image.name).put(image)
+export const uploadProductImage=(imageUri:string,imageName:string)=>{
+  return storage().ref(imageName).putFile(imageUri)
 }
 
 

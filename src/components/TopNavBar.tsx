@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import * as actions from '../actions/topNavBarActions'
 import { RootState } from '../reducers/rootReducer'
 import StoreOwnerDetails from '../data/StoreOwnerDetails'
-import { View , StyleSheet,  TouchableOpacity,Image} from 'react-native'
+import { View , StyleSheet,  TouchableOpacity,Image, Linking} from 'react-native'
 import {Icon} from 'react-native-elements'
 import StroreOwnerDetailsModal from './modals/StroreOwnerDetailsModal'
 import * as RootNavigation from '../ui/navigation/RootNavigation'
@@ -39,8 +39,8 @@ function TopNavBar() {
          disabled={isEditSODBtnEnabled} 
          onPress={()=>changeStoreOwnerDetailsModalVisibility(true)}/>
 
-        {(details.fbUrl!=="")?  <Icon name='facebook'/>:null}
-        {(details.instagramUrl!=="")?<Icon name='instagram' type='font-awesome-5'/>:null}
+        {(details.fbUrl!=="")?  <Icon name='facebook' onPress={()=>dispatch(actions.checkAndOpenUrl(details.fbUrl))}/>:null}
+        {(details.instagramUrl!=="")?<Icon name='instagram' type='font-awesome-5' onPress={()=>dispatch(actions.checkAndOpenUrl(details.instagramUrl))}/>:null}
         {(details.location!=="")? <Icon name='location-pin'/>:null}
 
         <Icon name='shopping-cart'

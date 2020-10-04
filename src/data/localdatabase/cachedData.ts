@@ -32,13 +32,13 @@ export const getShoppingCartItems=()=>{
     .then((stored)=>{
       if(stored!==null){
         logConsoleIfDebug(stored)
-        return  JSON.parse(stored) 
+        return  JSON.parse(stored) as string[]
       }
-        return []
+        return [] as string[]
     })
     .catch(e=>{
-        console.log(e)
-        return  []
+        errorConsoleIfDebug(e)
+        return [] as string[]
     })
 }
 
@@ -52,7 +52,7 @@ export const deleteItemFromCart=(itemPath:string)=>{
   }).then((parsedArr)=>{
     AsyncStorage.removeItem(SHOPPING_CART) 
     return parsedArr
-  }).then((parsedArr)=> AsyncStorage.setItem(SHOPPING_CART,JSON.stringify(parsedArr)))
+  })
+  .then((parsedArr)=> AsyncStorage.setItem(SHOPPING_CART,JSON.stringify(parsedArr)))
   .catch(e=>errorConsoleIfDebug(e))
- 
 }

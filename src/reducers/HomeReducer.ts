@@ -1,4 +1,6 @@
 import *as types from '../actions/types/homeActionTypes'
+import { AddProductModalErrors } from '../data/AddProductModalErrors'
+import { ImageToUploadDetails } from '../data/ImageToUploadDetails'
 import { ProductDetails } from '../data/ProductDetails'
 import {HomeReducer} from './types/index'
 
@@ -12,6 +14,10 @@ const initialState:HomeReducer={
   messageModalVisibility:false,
   productsDetailsFromDb:new Map<string,Map<string,ProductDetails>>(),
   selectedProductDetails:new ProductDetails(),
+  productModalErrorsMessage:new AddProductModalErrors(),
+  imageDetails:new ImageToUploadDetails(),
+  addCategoryModalVisibility:false
+
 }
 
 export default (state:HomeReducer=initialState,action:any)=>{
@@ -39,7 +45,12 @@ export default (state:HomeReducer=initialState,action:any)=>{
       ...state,
       addProductModalVisibility:action.visibility,
       selectedProductDetails:action.selectedProductDetails
-    }   
+    }
+  case types.ADD_CATEGORY_MODAL_VISIBILITY:
+  return{
+    ...state,
+    addCategoryModalVisibility:action.visibility
+  }     
 
   case types.ADD_CATEGORY_MODAL_BTN_DISABLED:
     return{
@@ -56,7 +67,12 @@ export default (state:HomeReducer=initialState,action:any)=>{
     return{
       ...state,
       productModalErrorsMessage:action.errors
-    }      
+    }
+  case types.IMAGE_TO_UPLOAD:
+    return{
+      ...state,
+      imageDetails:action.payload
+    }        
 
     default: return state
   }

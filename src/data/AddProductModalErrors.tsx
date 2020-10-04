@@ -1,9 +1,11 @@
 export class AddProductModalErrors {
-  category:string
-  productName:string
+  categoryError:string
+  productNameError:string
+  imageError:string
 
   constructor(){
-    this.category=""
-    this.productName=""
+    this.categoryError=""
+    this.productNameError=""
+    this.imageError=""
   }
 }

@@ -59,14 +59,17 @@ function ShoppingCart() {
           <ScrollView style={{marginTop:5}}>
             <Text >{savedProducts.get(clickedProduct)?.productDescription}</Text>
           </ScrollView>
+
         </View>
         </View>
       ):(null)
       }
-      
+      <View style={{justifyContent:'flex-end',  backgroundColor:'yellow',}}>
       <ScrollView horizontal={true} style={styles.savedProductsScrollView} >
           {productsDesign()}
-        </ScrollView>
+      </ScrollView>
+      </View>
+     
       
      
     </View>
@@ -76,11 +79,13 @@ const styles=StyleSheet.create({
   mainParentShoppingCart:{
     height:'100%',
     display:"flex",
+    flex:1,
     margin: 10,
+    backgroundColor:'aqua'
   },
   savedProductsScrollView:{
-    flex:1,
     width:"100%",
+  
 
   },
   savedProductDeleteIcon:{

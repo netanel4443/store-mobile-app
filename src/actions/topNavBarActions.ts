@@ -1,8 +1,8 @@
+import { Alert, Linking, Text, ToastAndroid } from 'react-native'
 import *as types from '../actions/types/topNavBarActionTypes'
 import {getStoreOwnerDetail} from '../data/firebaseOperations'
 import StoreOwnerDetails from '../data/StoreOwnerDetails'
 import { errorConsoleIfDebug, logConsoleIfDebug } from '../utils/consoleUtils'
-import { showLoadingModal} from '../actions/common/commonActions'
 
 export const getStoreOwnerDetailsFromDb=()=>async(dispatch:any)=>{
     return(
@@ -33,6 +33,19 @@ export const updateStoreOwnerDetailsInDb=(details:StoreOwnerDetails)=>(dispatch:
       )
       )
     )
+}
+
+export const checkAndOpenUrl=(url:string)=>async()=>{
+  const supported = await Linking.canOpenURL(url);
+
+  if (supported) {
+    // Opening the link with some app, if the URL scheme is "http" the web link should be opened
+    // by some browser in the mobile
+    await Linking.openURL(url);
+  } else {
+    
+     Alert.alert('',`Can't open this URL`)
+  }
 }
 
 export const changeStoreOwnerDetailsModalVisibility=(visibility:boolean)=>{

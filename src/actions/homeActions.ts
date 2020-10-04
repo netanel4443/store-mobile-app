@@ -4,7 +4,9 @@ import { AddProductModalErrors } from '../data/AddProductModalErrors'
 import { errorConsoleIfDebug, logConsoleIfDebug } from '../utils/consoleUtils'
 import * as repo from '../data/firebaseOperations'
 import * as localRepo from '../data/localdatabase/cachedData'
-import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore'
+import * as useCases from '../domain/homeUseCases'
+import { addItem, addProdcut } from '../data/bottomSheetItems'
+import { ImageToUploadDetails } from '../data/ImageToUploadDetails'
 
 export const addProductCategoryToDb=(category:string,)=>{
   return (dispatch:any)=>{
@@ -39,6 +41,13 @@ export const showAddProductModalVisibility=(visibility:boolean,selectedProductDe
       visibility:visibility,
       selectedProductDetails: selectedProductDetails
     }
+}
+
+export const addCategoryModalVisibility=(visibility:boolean)=>{
+  return{
+    type:types.ADD_CATEGORY_MODAL_VISIBILITY,
+    visibility:visibility
+  }
 }
 
 export const getCategoriesFromDb=()=>async(dispatch:any)=>{
@@ -83,8 +92,7 @@ export const getAllProductsFromDb=()=>async(dispatch:any,getState:any)=>{
             .finally(()=>dispatch(showLoadingModal(false)))
      })   
       }).catch((e)=>console.log(e))
-    )
-  
+    ) 
 }
 
 export const getProductsFromPath=(paths:string[])=>{
@@ -126,49 +134,55 @@ export const deleteProductCategoryFromDb=(category:string)=>{
   }
 }
 
-export const updateProduct=(categoryId:string,productDetails:ProductDetails,image:File | null)=>(dispatch:any)=>{
-    console.log(`doc ${categoryId}`)
-    if(productDetails.productName!==""&&productDetails.category!==""){
-        dispatch(showLoadingModal(true))
-
-      if(image){
-        if(productDetails.imageUrl!==""){
+export const updateProduct=(categoryId:string,productDetails:ProductDetails,imageDetails:ImageToUploadDetails)=>(dispatch:any)=>{
+    // console.log(`doc ${categoryId}`)
+    if(productDetails.productName!==""&&productDetails.category!==""){//if name & category werent supplied, show error messages
+        
+      if(imageDetails.imageUri!=='' && imageDetails.imageUri!==''){//if the user picked an image
+        if(productDetails.imageUrl!==""){//if there is an image at the database, delete it and upload new one.
+          
           return(
-            repo.deleteProductImage(productDetails.imageUrl)
+            dispatch(showLoadingModal(true)),
+            repo.deleteProductsImage(productDetails.imageUrl)
             .catch((e)=>{
               errorConsoleIfDebug(e)
               dispatch(showLoadingModal(false))
             })
-            .then(()=> dispatch(addProductToDb(categoryId,productDetails,image)))
+            .then(()=> dispatch(addProductToDb(categoryId,productDetails,imageDetails)))
           )
         }
-        else{
-          dispatch(addProductToDb(categoryId,productDetails,image))
+        else{//if there is not an image at the database, upload it.
+          dispatch(addProductToDb(categoryId,productDetails,imageDetails))
         }
       }
       else{
-       dispatch( uploadProductDetailsToDb(categoryId,productDetails))
+        if(productDetails.imageUrl!==""){//if the user didn't pick an image & there is an image at the datbase , update product's details
+           dispatch( uploadProductDetailsToDb(categoryId,productDetails))
+        }
+        else{ // else show error
+          const errorMessages=new AddProductModalErrors()
+          errorMessages.imageError='Choose an image'
+          dispatch(addProductModalErrors(errorMessages))
+        }
       }
   }
   else{
     const errorMessages=new AddProductModalErrors()
     if(productDetails.category===""){
-      errorMessages.category="Include product category"
+      errorMessages.categoryError="Include product category"
     }
     if(productDetails.productName===""){
-      errorMessages.productName="Include product name"
+      errorMessages.productNameError="Include product name"
     }
     dispatch(addProductModalErrors(errorMessages))
   }
-
 }
 
-export const addProductToDb=(categoryId:string,productDetails:ProductDetails,image:File)=>(dispatch:any)=>{
+export const addProductToDb=(categoryId:string,productDetails:ProductDetails,imageDetails:ImageToUploadDetails)=>(dispatch:any)=>{
     
-     
         dispatch(showLoadingModal(true))//start progress bar
 
-        const uploadTask= repo.uploadProductImage(image)
+        const uploadTask= repo.uploadProductImage(imageDetails.imageUri,imageDetails.imageName)
     
         return(
         uploadTask.on('state_changed',snapshot=>{},
@@ -188,12 +202,10 @@ export const addProductToDb=(categoryId:string,productDetails:ProductDetails,ima
                 })
             })
         )
-  
 }
 
-
 export const uploadProductDetailsToDb=(categoryId:string,productDetails:ProductDetails)=>(dispatch:any)=>{
- 
+    dispatch(showLoadingModal(true))
     const productDetailsCopy=Object.assign({},productDetails)
     return(
       repo.uploadProductDetails().add(productDetailsCopy)
@@ -206,7 +218,6 @@ export const uploadProductDetailsToDb=(categoryId:string,productDetails:ProductD
       }
       )
     )
-  
 }
 
 export const uploadProductPathToCategoryDb=(categoryId:string,path:string)=>{
@@ -214,7 +225,6 @@ export const uploadProductPathToCategoryDb=(categoryId:string,path:string)=>{
 }
 
 export const addProductModalErrors=(errorMessages:AddProductModalErrors)=>{
-  
   return{
     type:types.ADD_PRODUCT_MODAL_ERRORS,
     errors:errorMessages
@@ -232,4 +242,30 @@ export const showModalMessageToUser=(message:string,visibility:boolean)=>{
 export const addProductToCart=(path:string)=>async()=>{
 
   await localRepo.saveItemToCart(path)
+}
+
+export const actionByBottomSheetClick=(item:string)=>(dispatch:any)=>{
+ 
+
+  switch(item){
+
+    case addItem:{
+      dispatch({type:types.ADD_CATEGORY_MODAL_VISIBILITY,visibility:true})
+      break
+    }
+
+    case addProdcut:{
+      dispatch(showAddProductModalVisibility(true,new ProductDetails()))
+      break
+    }  
+
+  }
+}
+
+export const openGallery=()=>(dispatch:any)=>{
+  useCases.pickImage().then(imageDetails=>dispatch(updateImageToUploadUri(imageDetails)))
+}
+
+export const updateImageToUploadUri=(imageDetails:ImageToUploadDetails)=>{
+  return{type:types.IMAGE_TO_UPLOAD,payload:imageDetails}
 }

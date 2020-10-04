@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react'
-import {View , Text, ScrollView,StyleSheet,Image, Button, TouchableOpacity} from 'react-native'
+import React, { useEffect, useState } from 'react'
+import {View , Text, ScrollView,StyleSheet,Image, Button, TouchableOpacity, ActionSheetIOS} from 'react-native'
 import {useDispatch,useSelector, shallowEqual} from 'react-redux'
 import { ProductDetails } from '../data/ProductDetails'
 import {RootState} from '../reducers/rootReducer'
@@ -7,7 +7,12 @@ import  * as actions from '../actions/homeActions'
 import { getKeyByValue} from '../utils/mapUtils'
 import TopNavBar from './TopNavBar'
 import SimpleSpinnerModal from './modals/SimpleSpinnerModal'
-import { BottomSheet, Icon } from 'react-native-elements'
+import {  Icon } from 'react-native-elements'
+import BottomSheetModal from './modals/BottomSheetModal'
+import { addOptionsArray } from '../data/bottomSheetItems'
+import AddProductModal from './modals/AddProductModal'
+import AddCategoryModal from './modals/AddCategoryModal'
+
 
 const Home = () => {
 
@@ -18,6 +23,10 @@ const Home = () => {
     modalsMessage:state.homeReducer.modalsMessage,
     messageModalVisibility:state.homeReducer.messageModalVisibility,
   }),shallowEqual)
+
+  const addCategoryModalVisibility:boolean=useSelector((state:RootState)=>state.homeReducer.addCategoryModalVisibility)
+
+  const [bottomSheetVisibility,setBottomSheetVisibility]=useState(false)
 
   const categories:Map<string,string>=useSelector((state:RootState)=>state.homeReducer.categories)
   const products:Map<string,Map<string,ProductDetails>>=
@@ -32,6 +41,13 @@ const Home = () => {
      }
   }, [])
 
+  const showOrHideCategoryModalVisibility=(visibility:boolean)=>{
+    dispatch(actions.addCategoryModalVisibility(visibility))
+  }
+
+  const addCategory=(categoryToAdd:string)=>{
+    dispatch(actions.addProductCategoryToDb(categoryToAdd))
+ }
 
   const tes=(product:Map<string,ProductDetails>)=>{
     const tmpArr:any=[]
@@ -66,25 +82,40 @@ const Home = () => {
   }
 
   return (
-    <View >
+    <View style={styles.mainParent}>
       <TopNavBar />
 
       <ScrollView  >
     {  productsByCategory()}
       </ScrollView>
       <View style={styles.addBtn} >
-      <Icon 
-      name={'add'}
-            reverse/>
+       <Icon  name={'add'}reverse size={28} onPress={()=>
+        setBottomSheetVisibility(true)
+      } 
+        />
       </View>
-      
    
       <SimpleSpinnerModal isVisible={isLoading}/>
+      <AddProductModal/>
+      <BottomSheetModal 
+        items={addOptionsArray}
+        isVisible={bottomSheetVisibility} 
+        setVisibility={(visibility)=>setBottomSheetVisibility(visibility)}
+        onItemPress={(item)=>dispatch(actions.actionByBottomSheetClick(item))}/>
+    
+     <AddCategoryModal 
+        isVisible={addCategoryModalVisibility}
+        setVisibility={(visibility)=>showOrHideCategoryModalVisibility(visibility)}
+        addCategory={(categoryToAdd)=>addCategory(categoryToAdd)}
+        />
     </View>
   )
 }
 
 const styles=StyleSheet.create({
+  mainParent:{
+    flex:1
+  },
   productsHorizontalList:{
   },
   product:{
@@ -108,6 +139,10 @@ const styles=StyleSheet.create({
   addBtn:{
     position:'absolute',
     bottom:0,
+    marginVertical:20,
+    alignSelf:"flex-end",
+    end:5,
+    marginBottom:15,
   },
 
 })
